@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom';
 import Login from './Login';
 
@@ -11,6 +11,9 @@ function EditDetails() {
     let contactNoInputRef = useRef();
     let usernameInputRef = useRef();
     let passwordInputRef = useRef();
+    let profilePicInputRef = useRef();
+
+    let [profilePic, setProfilePic] = useState("/images/default.jpeg");
 
     let loc = useLocation();
 
@@ -22,7 +25,6 @@ function EditDetails() {
         ageInputRef.current.value = loc.state.age;
         emailInputRef.current.value = loc.state.email;
         contactNoInputRef.current.value = loc.state.contactNo;
-
     }, []);
 
     let edit = async () => {
@@ -37,13 +39,14 @@ function EditDetails() {
         dataToUpdate.append("age", ageInputRef.current.value);
         dataToUpdate.append("email", emailInputRef.current.value);
         dataToUpdate.append("contactNo", contactNoInputRef.current.value);
+        dataToUpdate.append("profilePic", profilePicInputRef.current.files[0]);
 
         let reqOptions = {
             method: "PUT",
             body: dataToUpdate,
         };
 
-        let JSONData = await fetch("http://localhost:5566/edit", reqOptions);
+        let JSONData = await fetch("http://localhost:6677/edit", reqOptions);
 
         let JSOData = await JSONData.json();
 
@@ -94,6 +97,21 @@ function EditDetails() {
                     <input ref={contactNoInputRef}
                         placeholder='Enter Contact No'></input>
                 </div>
+                <div>
+                    <label>Profile Pic:</label>
+                    <input type='file' ref={profilePicInputRef}
+                        onChange={() => {
+                            let selectedFileURL = URL.createObjectURL(profilePicInputRef.current.files[0]);
+                            setProfilePic(selectedFileURL);
+                            console.log(profilePicInputRef.current.files)
+
+                        }}
+                    ></input>
+                </div>
+                <div>
+                    <img id="choosePic" src={profilePic} ></img>
+                </div>
+
                 <div>
                     <button type='button'
                         onClick={() => {

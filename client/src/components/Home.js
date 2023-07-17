@@ -12,11 +12,10 @@ function Home() {
             method: "DELETE"
         }
 
-        let url = `http://localhost:5566/deleteUser?id=${loc.state._id}`;
+        let url = `http://localhost:6677/deleteUser?id=${loc.state._id}`;
         console.log(url);
 
         let JSONData = await fetch(url, reqOptions);
-
         let JSOData = await JSONData.json();
 
         if (JSOData.status == "Success") {
@@ -27,15 +26,14 @@ function Home() {
 
     return (
         <div>
-
             <h1>Welcome Home</h1>
             {/* Details[] frm Server->Login Page->through Navigate{state:..} -> Receiving with help of useLocation */}
             <h1>{loc.state.firstName} {loc.state.lastName}</h1>
 
-            <img src='/images/boy.jpeg'></img>
+            <img src={`http://localhost:6677/${loc.state.profilePic}`}></img>
+
 
             <div>
-
                 <button id='homeBtn' type="button"
                     onClick={() => {
                         navigate("/signout");
@@ -52,7 +50,6 @@ function Home() {
                     onClick={() => {
                         deleteUser();
                     }}>Delete Account</button>
-
             </div>
         </div>
     )

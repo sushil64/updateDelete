@@ -3,23 +3,24 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 
+
 const app = express();
 app.use(cors());
-// app.use(express.json());
+// Express Static
+app.use("/uploads", express.static("uploads"));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "uploads");
     },
     filename: (req, file, cb) => {
-        console.log(file);
-
+        // console.log(file);
         cb(null, `${Date.now()}_${file.originalname}`);
     }
-})
-
+});
 const upload = multer({ storage: storage });
 
+// also fetching data in this api call
 app.post("/validateLogin", upload.none(), async (req, res) => {
 
     let results = await userData.find().and({ username: req.body.username });
@@ -27,23 +28,18 @@ app.post("/validateLogin", upload.none(), async (req, res) => {
     if (results.length > 0) {
         if (results[0].password == req.body.password) {
             res.json({ status: "Success", isLoggedIn: true, details: results[0] });
-
             console.log("Details correct");
         } else {
             res.json({ status: "Failure", isLoggedIn: false, msg: "Invalid Password" });
-
         }
     }
     else {
         res.json({ status: "Failure", isLoggedIn: false, msg: "Invalid Email" });
-
     };
     console.log(results);
-
 });
 
-
-app.post("signup", upload.none(), async (req, res) => {
+app.post("/signup", upload.single("profilePic"), async (req, res) => {
 
     let dataEntered = new userData({
         username: req.body.username,
@@ -53,16 +49,15 @@ app.post("signup", upload.none(), async (req, res) => {
         age: req.body.age,
         email: req.body.email,
         contactNo: req.body.contactNo,
+        profilePic: req.file.path,
+
     });
     await dataEntered.save();
     res.json(["Account Created Succesfully"]);
-    console.log(req.body);
-
     console.log("Received singup data");
-    // res.statusCode(200);
 });
 
-app.put("/edit", upload.none(), async (req, res) => {
+app.put("/edit", upload.single("profilePic"), async (req, res) => {
     try {
         await userData.updateMany({ _id: req.body.id },
             {
@@ -73,6 +68,7 @@ app.put("/edit", upload.none(), async (req, res) => {
                 age: req.body.age,
                 email: req.body.email,
                 contactNo: req.body.contactNo,
+                profilePic: req.file.path,
             });
         res.n;
         res.json({ status: "Success", msg: "Account Updated Succesfully" });
@@ -85,26 +81,22 @@ app.put("/edit", upload.none(), async (req, res) => {
     console.log("Received singup data");
 });
 
-// Delete
 app.delete("/deleteUser", async (req, res) => {
 
     try {
         await userData.deleteMany({ _id: req.query.id });
         res.json({ status: "Success", msg: "Account Deleted Succesfully" });
-
     }
     catch (err) {
         res.json(err);
     }
 });
 
-app.listen(5566, () => {
-    console.log("Listening to port 5566");
+app.listen(6677, () => {
+    console.log("Listening to port 6677");
 });
 
-
 let userSchema = new mongoose.Schema({
-    // id: Number,
     username: String,
     password: String,
     firstName: String,
@@ -112,6 +104,7 @@ let userSchema = new mongoose.Schema({
     age: String,
     email: String,
     contactNo: String,
+    profilePic: String,
 });
 
 let userData = new mongoose.model("worker", userSchema);

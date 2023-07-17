@@ -5,7 +5,6 @@ function Login() {
 
     let userInputRef = useRef();
     let passInputRef = useRef();
-
     let navigate = useNavigate();
 
     let validateCredentials = async () => {
@@ -21,7 +20,7 @@ function Login() {
             body: dataToValidate,
         };
 
-        let JSONData = await fetch("http://localhost:5566/validateLogin", reqOptions);
+        let JSONData = await fetch("http://localhost:6677/validateLogin", reqOptions);
         let JSOData = await JSONData.json();
         console.log(JSOData);
 
@@ -29,10 +28,8 @@ function Login() {
             alert(JSOData.msg);
         } else {
             // 2nd parrameter must be an object;must be a state key and give value to it
-            // useNavigate is useful to Send & Navigate data
             navigate("/home", { state: JSOData.details });
         }
-
     };
 
     return (

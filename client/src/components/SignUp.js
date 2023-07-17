@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Login from './Login';
 
@@ -11,7 +11,9 @@ function SignUp() {
     let contactNoInputRef = useRef();
     let usernameInputRef = useRef();
     let passwordInputRef = useRef();
+    let profilePicInputRef = useRef();
 
+    let [profilePic, setProfilePic] = useState("/images/default.jpeg");
 
     let signUp = async () => {
 
@@ -25,13 +27,15 @@ function SignUp() {
         dataToSend.append("email", emailInputRef.current.value);
         dataToSend.append("contactNo", contactNoInputRef.current.value);
 
+        dataToSend.append("profilePic", profilePicInputRef.current.files[0]);
+
 
         let reqOptions = {
             method: "POST",
             body: dataToSend,
         };
 
-        let JSONData = await fetch("http://localhost:5566/signup", reqOptions);
+        let JSONData = await fetch("http://localhost:6677/signup", reqOptions);
 
         let JSOData = await JSONData.json();
 
@@ -80,6 +84,19 @@ function SignUp() {
                         placeholder='Enter Contact No'></input>
                 </div>
                 <div>
+                    <label>Profile Pic:</label>
+                    <input type='file' ref={profilePicInputRef}
+                        onChange={() => {
+                            let selectedFileURL = URL.createObjectURL(profilePicInputRef.current.files[0]);
+                            setProfilePic(selectedFileURL);
+                            console.log(profilePicInputRef.current.files);
+                        }}
+                    ></input>
+                </div>
+                <div>
+                    <img id="choosePic" src={profilePic}></img>
+                </div>
+                <div>
                     <button type='button'
                         onClick={() => {
                             signUp();
@@ -96,19 +113,3 @@ function SignUp() {
 }
 
 export default SignUp
-
-
-
-// ---------- [express.json] ------------
-        // let myHeader = new Headers();
-        // myHeader.append("content-type", "application/json");
-        // let dataToSend = {
-        //     firstName: firstNameInputRef.current.value,
-        //     lastName: lastNameInputRef.current.value,
-        //     email: emailInputRef.current.value,
-        //     age: ageInputRef.current.value,
-        //     contactNo: contactNoInputRef.current.value
-        // };
-// ---------- [express.json] ------------
-            // body: JSON.stringify(dataToSend),
-            // headers: myHeader,

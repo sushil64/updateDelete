@@ -9,7 +9,6 @@ import EditDetails from './components/EditDetails';
 
 function App() {
 
-
   return (
     <div className="App">
       <BrowserRouter>
